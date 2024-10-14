@@ -185,21 +185,6 @@ document.querySelectorAll('button.btn.btn-dot').forEach(item => {
     })
 })
 
-const imgSection = (arr) => {
-    img.innerHTML = '';
-    arr.forEach(item => {
-        img.innerHTML += `
-         <div class="w-${mehsullarinOlculeri} relative">
-            <img class="w-72 rounded-lg" src="${item.pic}" alt="">
-            <p class="mt-3">${item.name}</p>
-            <h2 class="font-medium mt-2">${item.qiymet}</h2>
-            <span>${item.availability > 0 ? `Stock: ${item.availability}` : 'Out of stock'}</span>
-            <i class="fa-solid fa-circle text-${item.rengler[0]}-500 mt-2"></i>
-            <i class="fa-solid fa-circle text-${item.rengler[1]} mt-2"></i>
-        </div>`
-    })
-}
-imgSection(mehsullar)
 
 const companyDetails = {
     name: '',
@@ -378,20 +363,28 @@ sort_optionslar.forEach((li) => {
 
 const filterSection = document.getElementById('product_selection')
 document.getElementById('filter_btn').addEventListener('click', () => {
-    document.getElementById('filter-modal').classList.toggle('hidden');
-    if (filterSection.className.includes('left-0')) {
+    if (filterSection.className.includes('left-0') && filterSection.className.includes('flex')) {
+        document.getElementById('filter-modal').classList.remove('flex');
+        document.getElementById('filter-modal').classList.add('hidden');
+
         filterSection.classList.remove('left-0');
         filterSection.classList.add('-left-40')
     } else {
+        document.getElementById('filter-modal').classList.add('flex');
+        document.getElementById('filter-modal').classList.remove('hidden');
         filterSection.classList.add('left-0');
         filterSection.classList.remove('-left-40')
     }
 });
-document.getElementById('filter-modal').addEventListener('click', () => {
+
+const FilterModaliniBaglayanFunk = () =>{
     document.getElementById('filter-modal').classList.add('hidden');
-    filterSection.classList.add('-left-40');
-    filterSection.classList.remove('left-0');
-})
+        document.getElementById('filter-modal').classList.remove('flex');
+        filterSection.classList.add('-left-40');
+        filterSection.classList.remove('left-0');
+}
+
+    document.getElementById('filter-overlay').addEventListener('click', FilterModaliniBaglayanFunk)
 const filter_options = document.querySelectorAll('.filter-item');
 const filterOptions = {
     category: '',
@@ -405,6 +398,7 @@ const filterOptions = {
 let filterOlunmusMehsullar = mehsullar;
 filter_options.forEach((li) => {
     li.addEventListener('click', (e) => {
+        FilterModaliniBaglayanFunk()
         const kliklenen = e.target;
         const cesid = kliklenen.getAttribute('filter-item');
         const secilen = kliklenen.getAttribute('data-type');
@@ -499,79 +493,114 @@ filter_options.forEach((li) => {
     })
 })
 
-
-
-const filter_availability = document.querySelectorAll('stock');
-filter_availability.forEach((li) => {
-    li.addEventListener('click', (e) => {
-        const kliklenen = e.target;
-        const secilen = kliklenen.getAttribute('data-type');
-        if (secilen === 'on_stock') {
-            const stokdaOlan = mehsullar.filter(item => item.availability);
-            imgSection(stokdaOlan)
-        } else {
-            const stokdaOlmayan = mehsullar.filter(item => item.availability);
-            imgSection(stokdaOlmayan)
-        }
-    })
+const minPrice = document.getElementById('minPrice')
+const maxPrice = document.getElementById('maxPrice')
+minPrice.addEventListener('input', () => {
+    filterOptions.minPrice = Number(minPrice.value);
+    const qiymetFerqi = mehsullar.filter(item=>item.qiymet>=Number(minPrice.value) && item.qiymet<=Number(maxPrice.value));
+    imgSection(qiymetFerqi);
 })
 
-const filter_brand = document.querySelectorAll('brand');
-filter_brand.forEach((li) => {
-    li.addEventListener('click', (e) => {
-        const kliklenen = e.target;
-        const secilen = kliklenen.getAttribute('data-type');
-        if (secilen === 'ecomus') {
-            const ecoOlan = mehsullar.filter(item => item.brand);
-            imgSection(ecoOlan)
-        } else {
-            const mhOlan = mehsullar.filter(item => item.brand);
-            imgSection(mhOlan)
-        }
-
-    })
+maxPrice.addEventListener('input', () => {
+    filterOptions.maxPrice = Number(maxPrice.value);
+    const qiymetFerqi = mehsullar.filter(item=>item.qiymet>=Number(minPrice.value) && item.qiymet<=Number(maxPrice.value));
+    imgSection(qiymetFerqi)
 })
 
-const filterColor = document.querySelectorAll('color');
-filterColor.forEach((li) => {
-    li.addEventListener('click', (e) => {
-        const kliklenen = e.target;
-        const secilen = kliklenen.getAttribute('data-type');
-        if (secilen === 'orange') {
-            const orangeColor = mehsullar.filter(item => item.rengler);
-            imgSection(orangeColor)
-        } else if (secilen === 'black') {
-            const blackColor = mehsullar.filter(item => item.rengler);
-            imgSection(mhOlan)
-        } else if (secilen === 'blue') {
-            const blueColor = mehsullar.filter(item => item.rengler);
-            imgSection(blueColor)
-        } else if (secilen === 'red') {
-            const redColor = mehsullar.filter(item => item.rengler);
-            imgSection(redColor)
-        } else {
-            const yellowColor = mehsullar.filter(item => item.rengler);
-            imgSection(yellowColor)
-        }
-    })
-})
 
-const filterSize = document.querySelectorAll('size');
-filterSize.forEach((li) => {
-    li.addEventListener('click', (e) => {
-        const kliklenen = e.target;
-        const secilen = kliklenen.getAttribute('data-type');
-        if (secilen === 's') {
-            const sSize = mehsullar.filter(item => item.size);
-            imgSection(sSize)
-        }
-        else if (secilen === 'm') {
-            const mSize = mehsullar.filter(item => item.size);
-            imgSection(mSize)
-        }
-        else {
-            const lSize = mehsullar.filter(item => item.size);
-            imgSection(lSize)
-        }
-    })
-})
+// const filter_availability = document.querySelectorAll('stock');
+// filter_availability.forEach((li) => {
+//     li.addEventListener('click', (e) => {
+        
+//         const kliklenen = e.target;
+//         const secilen = kliklenen.getAttribute('data-type');
+//         if (secilen === 'on_stock') {
+//             const stokdaOlan = mehsullar.filter(item => item.availability);
+//             imgSection(stokdaOlan)
+//         } else {
+//             const stokdaOlmayan = mehsullar.filter(item => item.availability);
+//             imgSection(stokdaOlmayan)
+//         }
+//     })
+// })
+
+// const filter_brand = document.querySelectorAll('brand');
+// filter_brand.forEach((li) => {
+//     li.addEventListener('click', (e) => {
+//         const kliklenen = e.target;
+//         const secilen = kliklenen.getAttribute('data-type');
+//         if (secilen === 'ecomus') {
+//             const ecoOlan = mehsullar.filter(item => item.brand);
+//             imgSection(ecoOlan)
+//         } else {
+//             const mhOlan = mehsullar.filter(item => item.brand);
+//             imgSection(mhOlan)
+//         }
+
+//     })
+// })
+
+// const filterColor = document.querySelectorAll('color');
+// filterColor.forEach((li) => {
+//     li.addEventListener('click', (e) => {
+//         const kliklenen = e.target;
+//         const secilen = kliklenen.getAttribute('data-type');
+//         if (secilen === 'orange') {
+//             const orangeColor = mehsullar.filter(item => item.rengler);
+//             imgSection(orangeColor)
+//         } else if (secilen === 'black') {
+//             const blackColor = mehsullar.filter(item => item.rengler);
+//             imgSection(mhOlan)
+//         } else if (secilen === 'blue') {
+//             const blueColor = mehsullar.filter(item => item.rengler);
+//             imgSection(blueColor)
+//         } else if (secilen === 'red') {
+//             const redColor = mehsullar.filter(item => item.rengler);
+//             imgSection(redColor)
+//         } else {
+//             const yellowColor = mehsullar.filter(item => item.rengler);
+//             imgSection(yellowColor)
+//         }
+//     })
+// })
+
+// const filterSize = document.querySelectorAll('size');
+// filterSize.forEach((li) => {
+//     li.addEventListener('click', (e) => {
+//         const kliklenen = e.target;
+//         const secilen = kliklenen.getAttribute('data-type');
+//         if (secilen === 's') {
+//             const sSize = mehsullar.filter(item => item.size);
+//             imgSection(sSize)
+//         }
+//         else if (secilen === 'm') {
+//             const mSize = mehsullar.filter(item => item.size);
+//             imgSection(mSize)
+//         }
+//         else {
+//             const lSize = mehsullar.filter(item => item.size);
+//             imgSection(lSize)
+//         }
+//     })
+// })
+
+
+
+
+
+
+const imgSection = (arr) => {
+    img.innerHTML = '';
+    arr.forEach(item => {
+        img.innerHTML += `
+         <div class="w-${mehsullarinOlculeri} relative">
+            <img class="w-72 rounded-lg" src="${item.pic}" alt="">
+            <p class="mt-3">${item.name}</p>
+            <h2 class="font-medium mt-2">${item.qiymet}</h2>
+            <span>${item.availability > 0 ? `Stock: ${item.availability}` : 'Out of stock'}</span>
+            <i class="fa-solid fa-circle text-${item.rengler[0]}-500 mt-2"></i>
+            <i class="fa-solid fa-circle text-${item.rengler[1]} mt-2"></i>
+        </div>`
+    });
+}
+imgSection(mehsullar)
